@@ -148,16 +148,3 @@ class EEGDatasetTrain2(Dataset):
         return to_return, to_return2, torch.tensor(label_i), torch.tensor(patient_i)
 
 
-class MEPDataset(Dataset):
-    def __init__(self, X, y, classIdx):
-        self.timeseries = X
-        self.labels = y
-        self.classIdx = classIdx
-
-    def __getitem__(self, index):
-        features = self.timeseries[index]
-        label = self.classIdx[self.labels[index]]
-        return torch.tensor(features), torch.tensor(label)
-
-    def __len__(self):
-        return len(self.timeseries)

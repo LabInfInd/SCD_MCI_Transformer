@@ -57,6 +57,7 @@ class MultiHeadAttention(nn.Module):
         scaling = self.emb_size ** (1 / 2)
         att = F.softmax(energy / scaling, dim=-1)
         att = self.att_drop(att)
+        #save attention weights for interpretability
         torch.save(att, 'att' + str(self.i) +'.pt')
         out = torch.einsum('bhal, bhlv -> bhav ', att, values)
         out = rearrange(out, "b h n d -> b n (h d)")
@@ -135,9 +136,9 @@ class ClassificationHead(nn.Sequential):
         return x, out
 
 
-# ViT - working version: 6 embeddings, 3 heads, depth 2
+# ViT - working version: 32 embeddings, 8 heads, depth 2
 class ViT(nn.Sequential):
-    def __init__(self, i=0, emb_size=32, num_heads=1, depth=1, n_classes=3, **kwargs):
+    def __init__(self, i=0, emb_size=32, num_heads=1, depth= 2, n_classes=3, **kwargs):
         super().__init__(
             PatchEmbedding(emb_size),
             TransformerEncoder(i, depth, emb_size, num_heads),
