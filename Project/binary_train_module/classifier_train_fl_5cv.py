@@ -1,19 +1,14 @@
 """
-EEG Conformer
-
-Convolutional Transformer for EEG decoding
-
-Couple CNN and Transformer in a concise manner with amazing results
+EEG Transformer Interpretability
 """
 import csv
-# remember to change paths
 
 import os
 
 from sklearn import metrics
 from sklearn.metrics import confusion_matrix
 
-from util.dataset_loader_fl import EEGDatasetTrain2
+from Project.util.dataset_loader_fl import EEGDatasetTrain2
 
 gpus = [0]
 os.environ['CUDA_DEVICE_ORDER'] = 'PCI_BUS_ID'
@@ -31,15 +26,13 @@ from torch import nn
 from torch.backends import cudnn
 from sklearn.model_selection import StratifiedKFold, train_test_split
 
-from model.transformer_fl import ViT
-import matplotlib.pyplot as plt
+from Project.model.transformer_fl import ViT
+
 
 cudnn.benchmark = False
 cudnn.deterministic = True
 
 def main():
-    #model = ViT(num_heads=8, n_classes=2).cuda()
-    #print(sum(p.numel() for p in model.parameters() if p.requires_grad))
 
     # Paths
     main_path = "D:\\Sibilano\\OneDrive - Politecnico di Bari\\EEG_Project\\Occhi_Chiusi\\"
@@ -86,20 +79,20 @@ def main():
     Tensor = torch.cuda.FloatTensor
     LongTensor = torch.cuda.LongTensor
 
-    criterion_l1 = torch.nn.L1Loss().cuda()
-    criterion_l2 = torch.nn.MSELoss().cuda()
+    #criterion_l1 = torch.nn.L1Loss().cuda()
+    #criterion_l2 = torch.nn.MSELoss().cuda()
     criterion_cls = torch.nn.CrossEntropyLoss().cuda()
 
+
+    #5-fold CV
     kf = StratifiedKFold(n_splits=5, shuffle=True, random_state=1)
 
     fold_index = 0
     for train_index, val_index in kf.split(train_cases, train_labels):
         fold_index = fold_index + 1
         mainDir = "D:\\Antonio\\Rev_Results\\2class_5cv_64_30sec_8heads_1depth\\" + band + "\\" + str(fold_index) + "\\"
-        #ch_path = mainDir + "ch_" + band + "\\"
         res_path = mainDir + "res_" + band + "\\"
         models_path = mainDir + "mod_" + band + "\\"
-        #os.makedirs(ch_path, exist_ok=True)
         os.makedirs(res_path, exist_ok=True)
         os.makedirs(models_path, exist_ok=True)
 
@@ -115,7 +108,7 @@ def main():
                                        balanceData=True, classes=2)
         val_dataloader = DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
 
-        # Dataset and Dataloader: validation
+        # Dataset and Dataloader: test
         te_dataset = EEGDatasetTrain2(classIndices=class_idx, ids=test_cases, root=data_path, normalize=True,
                                       labels=test_labels, len_sec=30, fc=512, balanceData=False, classes=2)
         te_dataloader = DataLoader(dataset=te_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
@@ -123,7 +116,7 @@ def main():
         starttime = datetime.datetime.now()
 
         model = ViT(num_heads= 8, n_classes=2).cuda()
-        #print(sum(p.numel() for p in model.parameters() if p.requires_grad()))
+
 
 
         # Optimizers

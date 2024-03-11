@@ -3,7 +3,6 @@ Transformer for EEG classification
 """
 import csv
 import pandas as pd
-from openpyxl import load_workbook
 import os
 
 import numpy as np
@@ -13,8 +12,6 @@ from torch import nn
 from torch.backends import cudnn
 from sklearn.metrics import confusion_matrix, classification_report
 
-# Import model
-from model.transformer_fl import ViT
 
 from natsort import natsorted
 
@@ -25,7 +22,7 @@ os.environ["CUDA_VISIBLE_DEVICES"] = ','.join(map(str, gpus))
 cudnn.benchmark = False
 cudnn.deterministic = True
 
-# Band: choose in ["delta", "theta", "alpha", "beta"]
+
 band = "EEG_Processed_new"
 
 # Class mapping to indices
@@ -67,11 +64,6 @@ for fold in range(num_folds):
     mainDir = "D:\\Antonio\\Rev_Results\\2class_5cv_64_30sec\\" + band + "\\" + str(fold+1) + "\\"
     res_path = mainDir + "res_" + band + "\\"
 
-    # Model init
-    #model = ViT(n_classes=2).cuda()
-    #model = nn.DataParallel(model, device_ids=[i for i in range(len(gpus))])
-    #model = model.cuda()
-
     states = os.listdir(res_path)
     states = natsorted(states)
     epochs = len(states)
@@ -79,28 +71,12 @@ for fold in range(num_folds):
     # Load models and get the epoch with highest auc on validation set
     val_aucs = []
     row = []
-    #with open('D:\\Sibilano\\OneDrive - Politecnico di Bari\\EEG_Project\\Nuovo_Lavoro\\Results\\Test1_'+ str(fold) +'.csv', 'w',
-                #encoding='UTF8') as f:
-        #writer = csv.DictWriter(f, fieldnames=['epoch','Train accuracy', 'Validation accuracy', 'Test accuracy', 'Validation AUC', 'Test AUC'], delimiter=',', lineterminator='\r')
-       # writer.writeheader()
 
-    df = pd.DataFrame()
-    #path = "D:\\Sibilano\\OneDrive - Politecnico di Bari\\EEG_Project\\Nuovo_Lavoro\\risultati_che_avevamo\\Test_25.xlsx"
-    #writer = pd.ExcelWriter(path, mode='a', if_sheet_exists='overlay')
     for epoch in range(epochs):
         state = res_path + states[epoch]
         perf = torch.load(state)
-        res = {key: perf[key] for key in perf.keys()
-            & {'epoch','Train accuracy', 'Validation accuracy', 'Test accuracy', 'Validation AUC', 'Test AUC'}}
-
-        #df = pd.concat([df, pd.DataFrame(data=res, index=[0])], ignore_index=True)
-        #df.to_excel(writer, sheet_name= str(fold), index=False)
-
-        #writer.writerows([res])
-
         val_aucs.append(perf['Validation AUC'])
-        #f.close()
-    #writer.close()
+
 
     idx_max = np.argmax(val_aucs)
     print(idx_max)
@@ -191,13 +167,13 @@ pz_f1 = []
 pz_prec = []
 
 for fold in range(num_folds):
-    # print("Fold: " + str(fold))
-    # print("Training Epochs")
-    # print(confusion_matrix(np.asarray(fold_tr_labels[fold].cpu()), np.asarray(fold_tr_preds[fold].cpu())))
-    # print("-----------------")
-    # print("Validation Epochs")
-    # print(confusion_matrix(np.asarray(fold_val_labels[fold].cpu()), np.asarray(fold_val_preds[fold].cpu())))
-    # print("Test Epochs")
+    print("Fold: " + str(fold))
+    print("Training Epochs")
+    print(confusion_matrix(np.asarray(fold_tr_labels[fold].cpu()), np.asarray(fold_tr_preds[fold].cpu())))
+    print("-----------------")
+    print("Validation Epochs")
+    print(confusion_matrix(np.asarray(fold_val_labels[fold].cpu()), np.asarray(fold_val_preds[fold].cpu())))
+    print("Test Epochs")
     print(confusion_matrix(np.asarray(fold_te_labels[fold].cpu()), np.asarray(fold_te_preds[fold].cpu())))
     #print(classification_report(np.asarray(fold_te_labels[fold].cpu()), np.asarray(fold_te_preds[fold].cpu())))
     tn, fp, fn, tp = confusion_matrix(np.asarray(fold_te_labels[fold].cpu()), np.asarray(fold_te_preds[fold].cpu())).ravel()
@@ -209,14 +185,14 @@ for fold in range(num_folds):
     ep_aucs.append(fold_te_aucs[fold])
 
 
-    # print("-----------------")
+    print("-----------------")
     #
-    # print("Training Patients")
-    #print(confusion_matrix(np.asarray(fold_tr_pz_label[fold]), np.asarray(fold_tr_pz_preds[fold])))
-    # print("-----------------")
-    # print("Validation Patient")
-    #print(confusion_matrix(np.asarray(fold_val_pz_label[fold]), np.asarray(fold_val_pz_preds[fold])))
-    # print("Test Patients")
+    print("Training Patients")
+    print(confusion_matrix(np.asarray(fold_tr_pz_label[fold]), np.asarray(fold_tr_pz_preds[fold])))
+    print("-----------------")
+    print("Validation Patient")
+    print(confusion_matrix(np.asarray(fold_val_pz_label[fold]), np.asarray(fold_val_pz_preds[fold])))
+    print("Test Patients")
     cm = confusion_matrix(np.asarray(fold_te_pz_label[fold]), np.asarray(fold_te_pz_preds[fold]))
     #print(classification_report(np.asarray(fold_te_labels[fold].cpu()), np.asarray(fold_te_preds[fold].cpu())))
     print(cm)

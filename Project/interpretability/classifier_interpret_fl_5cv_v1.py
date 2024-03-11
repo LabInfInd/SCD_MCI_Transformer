@@ -99,7 +99,6 @@ te_dataloader = DataLoader(dataset=te_dataset, batch_size=batch_size, shuffle=Fa
 
 gpus = [0]
 model = ViT(num_heads = 8 ,n_classes=2).cuda()
-#model = nn.DataParallel(model, device_ids=[i for i in range(len(gpus))])
 #load the trained model
 best_model = torch.load(res_path + '%d.pt' % epoch)
 model.load_state_dict(best_model['model_state_dict'])
@@ -115,6 +114,7 @@ montage = mne.channels.read_custom_montage("chan_loc.loc", head_size=0.095, coor
 n_channels = len(montage.ch_names)
 #this is required to create .eeg files from raw binary data and import them in Letswave7
 fake_info = mne.create_info(ch_names=montage.ch_names, sfreq=512., ch_types='eeg')
+save_path = 'custom_path\\'
 
 
 with torch.no_grad():
@@ -184,6 +184,6 @@ with torch.no_grad():
 
             #save files for SCD and MCI
             if label == 0:
-                pybv.write_brainvision(data= eeg_epochs[:][0], sfreq= 512, unit= 'V', ch_names= montage.ch_names, fname_base= 'SCD_eeg_att_' + str(patient.item()), folder_out= 'D:\\Sibilano\\OneDrive - Politecnico di Bari\\EEG_Project\\Nuovo_Lavoro\\Final\\prova\\depth' + str(depth) +'\\SCD\\')
+                pybv.write_brainvision(data= eeg_epochs[:][0], sfreq= 512, unit= 'V', ch_names= montage.ch_names, fname_base= 'SCD_eeg_att_' + str(patient.item()), folder_out= save_path + 'depth' + str(depth) +'\\SCD\\')
             else:
-                pybv.write_brainvision(data= eeg_epochs[:][0], sfreq= 512, unit= 'V', ch_names= montage.ch_names, fname_base= 'MCI_eeg_att_' + str(patient.item()), folder_out= 'D:\\Sibilano\\OneDrive - Politecnico di Bari\\EEG_Project\\Nuovo_Lavoro\\Final\\prova\\depth' + str(depth) + '\\MCI\\')
+                pybv.write_brainvision(data= eeg_epochs[:][0], sfreq= 512, unit= 'V', ch_names= montage.ch_names, fname_base= 'MCI_eeg_att_' + str(patient.item()), folder_out= save_path + 'depth' + str(depth) + '\\MCI\\')
