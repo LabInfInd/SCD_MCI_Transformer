@@ -35,8 +35,8 @@ cudnn.deterministic = True
 def main():
 
     # Paths
-    main_path = "D:\\Sibilano\\OneDrive - Politecnico di Bari\\EEG_Project\\Occhi_Chiusi\\"
-    label_path_file = "D:\\Sibilano\\OneDrive - Politecnico di Bari\\EEG_Project\\Labels_new.csv"
+    main_path = ".\\EEG_Project\\Occhi_Chiusi\\"
+    label_path_file = ".\\EEG_Project\\Labels_new.csv"
 
     # Band: choose in ["delta", "theta", "alpha", "beta"]
     band = "EEG_Processed_new"
@@ -90,7 +90,7 @@ def main():
     fold_index = 0
     for train_index, val_index in kf.split(train_cases, train_labels):
         fold_index = fold_index + 1
-        mainDir = "D:\\Antonio\\Rev_Results\\2class_5cv_64_30sec_8heads_1depth\\" + band + "\\" + str(fold_index) + "\\"
+        mainDir = ".\\Rev_Results\\2class_5cv_64_30sec\\" + band + "\\" + str(fold_index) + "\\"
         res_path = mainDir + "res_" + band + "\\"
         models_path = mainDir + "mod_" + band + "\\"
         os.makedirs(res_path, exist_ok=True)
@@ -123,7 +123,7 @@ def main():
         optimizer = torch.optim.Adam(model.parameters(), lr=0.0001)
 
         for epoch in range(n_epochs):
-            print("ciao")
+
             tr_loss = 0
             train_acc = 0
             pz_train_acc = 0

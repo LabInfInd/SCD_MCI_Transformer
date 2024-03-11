@@ -61,7 +61,7 @@ fold_te_pz_preds = dict()
 # Loop over folds
 for fold in range(num_folds):
     print("Current fold: " + str(fold))
-    mainDir = "D:\\Antonio\\Rev_Results\\2class_5cv_64_30sec\\" + band + "\\" + str(fold+1) + "\\"
+    mainDir = ".\\Rev_Results\\2class_5cv_64_30sec\\" + band + "\\" + str(fold+1) + "\\"
     res_path = mainDir + "res_" + band + "\\"
 
     states = os.listdir(res_path)

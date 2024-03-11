@@ -14,8 +14,8 @@ from interpret import plot_interpret
 # Set the device for training
 device = torch.device("cuda")
 
-main_path = "D:\\Sibilano\\OneDrive - Politecnico di Bari\\EEG_Project\\Occhi_Chiusi\\"
-label_path_file = "D:\\Sibilano\\OneDrive - Politecnico di Bari\\EEG_Project\\Labels_new.csv"
+main_path = ".\\EEG_Project\\Occhi_Chiusi\\"
+label_path_file = ".\\EEG_Project\\Labels_new.csv"
 
 band = "EEG_Processed_new"
 
@@ -56,7 +56,7 @@ best_aucs = []
 
 for fold in range(num_folds):
     print("Current fold: " + str(fold))
-    mainDir = "D:\\Antonio\\Rev_Results\\2class_5cv_64_30sec\\" + band + "\\" + str(fold + 1) + "\\"
+    mainDir = ".\\Rev_Results\\2class_5cv_64_30sec\\" + band + "\\" + str(fold + 1) + "\\"
     res_path = mainDir + "res_" + band + "\\"
 
     states = os.listdir(res_path)
@@ -88,7 +88,7 @@ epoch = max(best_epochs)
 print("Best fold: " + str(fold_index + 1))
 print("Best epoch: " + str(epoch))
 
-mainDir =  "D:\\Antonio\\Rev_Results\\2class_5cv_64_30sec\\" + band + "\\" + str(fold_index + 1) + "\\"
+mainDir =  ".\\Rev_Results\\2class_5cv_64_30sec\\" + band + "\\" + str(fold_index + 1) + "\\"
 res_path = mainDir + "res_" + band + "\\"
 
 # Dataset and Dataloader: all subjects
